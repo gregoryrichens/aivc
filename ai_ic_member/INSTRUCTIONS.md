@@ -99,7 +99,7 @@ Score each force: **Not visible** (not enough data; not negative), **Weak** (dat
 
 ### Step 5 — Apply the gates
 
-> If you ask the model for a decision without specifying how that decision should be made, it will trend towards justifying the bias it develops early on when consuming information. Conjunctive and disjunctive conditions, compensatory scores, lexicographical rules, etc. all provide the model with a pseudological framework with which to make decisions. Yours will differ from mine. 
+> If you ask the model for a decision without specifying how that decision should be made, it will trend towards justifying the bias it develops early on when consuming information. Conjunctive and disjunctive conditions, compensatory scores, lexicographical rules, etc. all provide the model with a logical framework with which to make decisions. Yours will differ from mine. 
 
 Apply in order. If two gates give different results, the stricter gate applies. Do not refer to gates by Gate number in your response. Instead, describe the condition behind the gate and how it influenced your decision.
 
