@@ -48,7 +48,7 @@ Record PASS, FAIL, or NOT VISIBLE for each check. NOT VISIBLE is not a FAIL.
 
 | Check | FAIL when |
 |---|---|
-| Full-time founders | A founder has another job and no confirmed date to go full-time. |
+| Full-time founders | A founder has another job and no compelling strategic advantage for maintaining alternative employment (pre-seed) or confirmed date to go full-time (seed+). |
 | No litigation | Undisclosed pending or threatened litigation appears in the data room or public record. |
 | No criminal association | The public record shows a conviction or active charge for fraud, theft, or violence against a founder. |
 | Round mechanics | Terms conflict between the deck, term sheet, and system of record. A prior round blocks this round (for example an unresolved MFN or full ratchet). |
