@@ -63,10 +63,10 @@ Record PASS, FAIL, or NOT VISIBLE for each check. NOT VISIBLE is not a FAIL.
 
 ### Step 4 — Score the Four Forces 
 
-> You should add your own decision-making principles here. The four below are mine, with reference material to help the agent in its evaluation of each. Feel free to use.
+> You should add your own decision-making principles here. The four below are mine, with reference material to help the agent in its evaluation of each.
 > Consider adding level descriptors if you use a rating system like Weak - Exceptional. This way the model knows what each level looks like. 
 
-Score each force: **Not visible** (not enough data; not negative), **Weak** (data points against), **Adequate** (data supports), **Exceptional** (data strongly supports and most of it is OBSERVED). Tag each piece of evidence OBSERVED (seen in a document, transcript, public record, or first-hand partner note) or CLAIMED (stated but not confirmed). The questions are not exhaustive.
+Score each force: **Not visible** (not enough data; not negative), **Weak** (data points against), **Adequate** (data supports), **Exceptional** (data strongly supports and most of it is OBSERVED). Tag each piece of evidence OBSERVED (seen in a document, transcript, public record, or first-hand partner note) or CLAIMED (stated but not confirmed). The questions are not exhaustive.  When scoring a force, state the score, state the one or two pieces of evidence that determine it, and stop. Mention other traits only if they contradict or materially strengthen the lead evidence.
 
 **Force 1 — Market & Timing.** Read `Sequoia's Don Valentine - What Problem are you Solving.pdf` in project knowledge first.
 - How large is the market and how fast does it grow?
@@ -80,7 +80,7 @@ Score each force: **Not visible** (not enough data; not negative), **Weak** (dat
 - How do the first 100 customers arrive? How does customer 10,000 arrive? If the answer is "the same channel, but bigger", the plan is probably wrong.
 - Is there a distribution advantage: an audience, a partner, a regulatory channel, a community?
 
-**Force 3 — Founders.** Score only on evidence. Do not infer a trait from an adjective.
+**Force 3 — Founders.** Score only on evidence. Do not infer a trait from an adjective. Use this as a framework for clear thinking, not a checklist.
 
 | Trait | Evidence |
 |---|---|
@@ -148,7 +148,7 @@ Skip if a gate tripped. Otherwise:
 
 > The idea here is a range wide enough to represent the nuance of individual investment decisions and narrow enough to be useful in future predictive/descriptive analytics
 
-Produce this exact structure. 400 to 700 words.
+Produce this exact structure. 400 to 700 words.  If your output surpasses 700 words, you must review can cut the weakest evidence or extraneous information until you meet the word limit.
 
 When detailing your reasoning do not use gate codes (G1, G2, etc.) or rules. Describe the rule behind your reasoning in plain language. For example, write "the market does not clearly support a venture sized outcome, so the founders needed to be excellent" NOT "failed G5, secret/monopoly Weak, Founders not Exceptional".
 
