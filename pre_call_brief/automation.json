@@ -1,0 +1,437 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "founder-call-brief",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "id": "1578c30c-cbee-49b5-bb4f-c3a4997b98c1",
+      "name": "Webhook: Founder Call Brief",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2224,
+        352
+      ],
+      "webhookId": "founder-call-brief",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg-framework",
+              "name": "FRAMEWORK",
+              "value": "enter your system prompt here, for example: \"You are a helpful assistant that completes the Founder Call Brief for a given Attio Deal. You have access to the Attio MCP Server, Google Drive MCP, and Tavily tools to research the deal and its associated company. You will return only the completed brief in Markdown format.\"",
+              "type": "string"
+            },
+            {
+              "id": "cfg-model",
+              "name": "ANTHROPIC_MODEL",
+              "value": "claude-sonnet-5",
+              "type": "string"
+            },
+            {
+              "id": "cfg-max-iterations",
+              "name": "MAX_ITERATIONS",
+              "value": 16,
+              "type": "number"
+            },
+            {
+              "id": "cfg-brief-status-slug",
+              "name": "ATTIO_SLUG_BRIEF_STATUS",
+              "value": "brief_status",
+              "type": "string"
+            },
+            {
+              "id": "cfg-company-slug",
+              "name": "ATTIO_SLUG_COMPANY",
+              "value": "associated_company",
+              "type": "string"
+            },
+            {
+              "id": "cfg-google-folder-slug",
+              "name": "ATTIO_SLUG_GOOGLE_FOLDER",
+              "value": "google_folder",
+              "type": "string"
+            },
+            {
+              "id": "cfg-deck-link-slug",
+              "name": "ATTIO_SLUG_DECK_LINK",
+              "value": "deck_link",
+              "type": "string"
+            },
+            {
+              "id": "cfg-generated-status",
+              "name": "BRIEF_GENERATED_STATUS",
+              "value": "Generated",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "dd3a8483-487e-4780-acb2-331ffe3f29ab",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1856,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research the Attio Deal with ID:\n{{ $('Webhook: Founder Call Brief').item.json.body.dealId }}\n\nComplete the Founder Call Brief according to the system instructions.\n\nReturn only the completed brief in Markdown.",
+        "options": {
+          "systemMessage": "={{ $('Config').item.json.FRAMEWORK }}",
+          "maxIterations": "={{ $('Config').item.json.MAX_ITERATIONS }}",
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1680,
+        352
+      ],
+      "id": "4de91f89-7f76-4e6a-9420-f9f7018988b3",
+      "name": "AI Agent: Founder Call Brief"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-5",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {
+          "maxTokensToSample": 10000,
+          "temperature": 0.2,
+          "promptCaching": "5m"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        -1776,
+        688
+      ],
+      "id": "60400fb4-139b-4356-8521-0a13aace8462",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $json.output ?? $json.text ?? $json.response ?? '';\n\nif (typeof output !== 'string' || !output.trim()) {\n  throw new Error('AI Agent returned no final brief. Inspect the AI Agent execution and its tool calls.');\n}\n\nreturn [{\n  json: {\n    brief: output.trim()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1392,
+        352
+      ],
+      "id": "de360bd7-4ac3-4da0-b06f-816dfa19985f",
+      "name": "Extract: Brief"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.attio.com/v2/notes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n(() => {\n  const md = $node[\"Extract: Brief\"].json.brief;\n  const dealId = $node[\"Webhook: Founder Call Brief\"].json.body.dealId;\n  const today = new Date().toISOString().slice(0, 10);\n\n  return {\n    data: {\n      parent_object: \"deals\",\n      parent_record_id: dealId,\n      title: \"Founder Call Brief — \" + today,\n      format: \"markdown\",\n      content: md\n    }\n  };\n})()\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1168,
+        352
+      ],
+      "id": "b95755dd-71aa-43bc-a0e6-846ee32b4daa",
+      "name": "Attio: Create Brief Note",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.attio.com/v2/objects/deals/records/{{ $node[\"Webhook: Founder Call Brief\"].json.body.dealId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n  data: {\n    values: {\n      [$node[\"Config\"].json.ATTIO_SLUG_BRIEF_STATUS]: [\n        { option: $node[\"Config\"].json.BRIEF_GENERATED_STATUS }\n      ]\n    }\n  }\n}\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        352
+      ],
+      "id": "ebedad1e-ad46-4863-b0ea-46ba48e3b87d",
+      "name": "Attio: Set Brief Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://drivemcp.googleapis.com/mcp/v1",
+        "authentication": "mcpOAuth2Api",
+        "include": "selected",
+        "includeTools": [
+          "search_files",
+          "get_file_metadata",
+          "read_file_content"
+        ],
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        -1488,
+        688
+      ],
+      "id": "eae979aa-9195-48eb-8a66-d6726673b939",
+      "name": "Google Drive MCP",
+      "credentials": {
+        "mcpOAuth2Api": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://mcp.attio.com/mcp",
+        "authentication": "mcpOAuth2Api",
+        "include": "selected",
+        "includeTools": [
+          "search-records",
+          "get-records-by-ids",
+          "list-attribute-definitions"
+        ],
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        -1632,
+        688
+      ],
+      "id": "027b5dbc-68ad-410c-8ca9-03d523e363f8",
+      "name": "Attio MCP Server",
+      "credentials": {
+        "mcpOAuth2Api": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {
+          "search_depth": "basic",
+          "max_results": 5,
+          "include_raw_content": false
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        688
+      ],
+      "id": "10273a04-1fcd-44a7-ac02-03e539889882",
+      "name": "Tavily Search",
+      "credentials": {
+        "tavilyApi": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Retrieve fuller content from specific web URLs already identified through Web Search. Use only when Search does not provide enough content to verify an important claim, when exact context from a primary source matters, or when a specific source needs deeper examination. Do not routinely extract search results.",
+        "resource": "extract",
+        "urls": [
+          "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('urls0_URLs', ``, 'string') }}"
+        ],
+        "options": {
+          "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', `The specific information to extract from the provided URL. Describe only the facts or context needed to resolve the current research question.`, 'string') }}",
+          "chunks_per_source": 2,
+          "include_images": false,
+          "extract_depth": "basic",
+          "format": "markdown",
+          "include_favicon": false
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        848
+      ],
+      "id": "65c9b1c7-60db-41b4-91de-eb748bb7f62d",
+      "name": "Tavily Extract",
+      "credentials": {
+        "tavilyApi": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "REDACTED_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Extract node \nfor now we are not using this - could be useful in the future when we have more access to credits"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        832
+      ],
+      "id": "54682277-5cdf-49f7-aefb-a0f3da7add1e",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Webhook: Founder Call Brief": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Founder Call Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Founder Call Brief": {
+      "main": [
+        [
+          {
+            "node": "Extract: Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Founder Call Brief",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract: Brief": {
+      "main": [
+        [
+          {
+            "node": "Attio: Create Brief Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attio: Create Brief Note": {
+      "main": [
+        [
+          {
+            "node": "Attio: Set Brief Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive MCP": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Founder Call Brief",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attio MCP Server": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Founder Call Brief",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent: Founder Call Brief",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily Extract": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {}
+}
